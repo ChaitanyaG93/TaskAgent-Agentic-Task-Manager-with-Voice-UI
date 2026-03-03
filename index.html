@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Agentic Task Manager - Voice-enabled intelligent to-do list">
+    <meta name="theme-color" content="#0a0a0f">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TaskAgent">
+    
+    <title>Agentic Task Manager - Voice-Enabled To-Do</title>
+    
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- ==========================================
+         HEADER: App Title & Voice Status
+         ========================================== -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-area">
+                <h1 class="app-title">
+                    <span class="logo-icon">🤖</span>
+                    <span class="title-text">TaskAgent</span>
+                </h1>
+                <p class="app-subtitle">Your Voice-Enabled Productivity Assistant</p>
+            </div>
+            
+            <!-- Voice Status Indicator -->
+            <div class="voice-status" id="voiceStatus">
+                <span class="status-icon">🎤</span>
+                <span class="status-text">Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         MAIN CONTENT AREA
+         ========================================== -->
+    <main class="main-container">
+        
+        <!-- ==========================================
+             INPUT SECTION: Voice + Text Input
+             ========================================== -->
+        <section class="input-section">
+            <div class="input-container">
+                <h2 class="section-title">Add New Task</h2>
+                
+                <!-- Voice Input Button -->
+                <div class="voice-input-area">
+                    <button class="voice-btn" id="voiceBtn" aria-label="Start voice input" title="Click to speak">
+                        <span class="mic-icon">🎤</span>
+                        <span class="btn-text">Tap to Speak</span>
+                    </button>
+                    
+                    <!-- Live Transcript Display -->
+                    <div class="voice-transcript" id="voiceTranscript">
+                        <span class="transcript-label">Listening:</span>
+                        <span class="transcript-text" id="transcriptText">...</span>
+                        <span class="confidence-meter" id="confidenceMeter"></span>
+                    </div>
+                </div>
+
+                <!-- Text Input Fallback -->
+                <div class="text-input-area">
+                    <label for="taskInput" class="input-label">Or type your task:</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="taskInput" 
+                            class="task-input" 
+                            placeholder="e.g., Buy groceries at 5pm"
+                            autocomplete="off"
+                        >
+                        <button class="add-btn" id="addBtn" aria-label="Add task">
+                            <span class="add-icon">+</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Priority Selector -->
+                <div class="priority-selector">
+                    <label class="priority-label">Priority:</label>
+                    <div class="priority-buttons">
+                        <button class="priority-btn" data-priority="high" aria-label="High priority">
+                            <span class="priority-dot priority-high"></span>
+                            High
+                        </button>
+                        <button class="priority-btn priority-btn-active" data-priority="medium" aria-label="Medium priority">
+                            <span class="priority-dot priority-medium"></span>
+                            Medium
+                        </button>
+                        <button class="priority-btn" data-priority="low" aria-label="Low priority">
+                            <span class="priority-dot priority-low"></span>
+                            Low
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             TASKS SECTIONS: Organized by Priority
+             ========================================== -->
+        <section class="tasks-container">
+            
+            <!-- High Priority Tasks -->
+            <div class="priority-section" data-priority="high">
+                <div class="section-header">
+                    <h2 class="section-heading">
+                        <span class="priority-indicator priority-high"></span>
+                        High Priority
+                    </h2>
+                    <span class="task-count" id="highCount">0</span>
+                </div>
+                <ul class="task-list" id="highPriorityList">
+                    <!-- Tasks will be dynamically inserted here -->
+                </ul>
+            </div>
+
+            <!-- Medium Priority Tasks -->
+            <div class="priority-section" data-priority="medium">
+                <div class="section-header">
+                    <h2 class="section-heading">
+                        <span class="priority-indicator priority-medium"></span>
+                        Medium Priority
+                    </h2>
+                    <span class="task-count" id="mediumCount">0</span>
+                </div>
+                <ul class="task-list" id="mediumPriorityList">
+                    <!-- Tasks will be dynamically inserted here -->
+                </ul>
+            </div>
+
+            <!-- Low Priority Tasks -->
+            <div class="priority-section" data-priority="low">
+                <div class="section-header">
+                    <h2 class="section-heading">
+                        <span class="priority-indicator priority-low"></span>
+                        Low Priority
+                    </h2>
+                    <span class="task-count" id="lowCount">0</span>
+                </div>
+                <ul class="task-list" id="lowPriorityList">
+                    <!-- Tasks will be dynamically inserted here -->
+                </ul>
+            </div>
+
+        </section>
+
+        <!-- ==========================================
+             AGENT SUGGESTIONS PANEL (ASIDE)
+             ========================================== -->
+        <aside class="suggestions-panel" id="suggestionsPanel">
+            <div class="panel-header">
+                <h3 class="panel-title">
+                    <span class="ai-icon">✨</span>
+                    Agent Insights
+                </h3>
+            </div>
+            <div class="suggestions-content" id="suggestionsContent">
+                <div class="suggestion-item">
+                    <span class="suggestion-icon">👋</span>
+                    <p class="suggestion-text">Welcome! Start by adding your first task using voice or text.</p>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- ==========================================
+         FOOTER: Statistics & Settings
+         ========================================== -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            
+            <!-- Statistics -->
+            <div class="stats-area">
+                <div class="stat-item">
+                    <span class="stat-label">Total Tasks</span>
+                    <span class="stat-value" id="totalTasks">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Completed</span>
+                    <span class="stat-value" id="completedTasks">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Completion Rate</span>
+                    <span class="stat-value" id="completionRate">0%</span>
+                </div>
+            </div>
+
+            <!-- Settings Button -->
+            <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+                <span class="settings-icon">⚙️</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         MODAL: Settings (Hidden by default)
+         ========================================== -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Settings</h3>
+                <button class="modal-close" id="closeModal" aria-label="Close settings">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label for="voiceToggle">Enable Voice Commands</label>
+                    <input type="checkbox" id="voiceToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="soundToggle">Sound Feedback</label>
+                    <input type="checkbox" id="soundToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="themeToggle">Dark Mode</label>
+                    <input type="checkbox" id="themeToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="soundToggle">Sound Feedback</label>
+                    <input type="checkbox" id="soundToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="themeToggle">Dark Mode</label>
+                    <input type="checkbox" id="themeToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="voiceToggle">Enable Voice Commands</label>
+                    <input type="checkbox" id="voiceToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label for="continuousToggle">Continuous Listening</label>
+                    <input type="checkbox" id="continuousToggle">
+                </div>
+                <div class="setting-item">
+                    <label for="wakeWordInput">Wake Word</label>
+                    <input type="text" id="wakeWordInput" placeholder="e.g. hey agent">
+                </div>
+                <div class="setting-item">
+                    <label for="langSelect">Recognition Language</label>
+                    <select id="langSelect">
+                        <option value="en-US">English (US)</option>
+                        <option value="en-GB">English (UK)</option>
+                        <option value="es-ES">Español</option>
+                        <option value="fr-FR">Français</option>
+                        <!-- add more as needed -->
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <button id="exportBtn" class="export-btn">Export Tasks</button>
+                </div>
+                <div class="setting-item">
+                    <label for="importInput" class="import-label">Import Tasks</label>
+                    <input type="file" id="importInput" accept="application/json">
+                </div>
+            </div>
+        </div>
+    </div>    http://localhost:8000
+
+    <!-- ==========================================
+         CELEBRATION OVERLAY (Hidden by default)
+         ========================================== -->
+    <div class="celebration-overlay" id="celebrationOverlay">
+        <div class="confetti-container" id="confettiContainer"></div>
+        <div class="celebration-content">
+            <h2 class="celebration-title">🎉 All Done!</h2>
+            <p class="celebration-message">You've completed all your tasks!</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
